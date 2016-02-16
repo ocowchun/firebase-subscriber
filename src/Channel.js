@@ -40,6 +40,10 @@ class Channel {
     this._ref.update(value);
   }
 
+  push(value) {
+    this._ref.push(value);
+  }
+
   onDisconnect(callback) {
     let disconnectRef = this._ref.onDisconnect();
     callback(disconnectRef);

@@ -16,8 +16,6 @@ let Connection = function(endPoint, getAuthToken) {
     }
 
     return conn;
-    // new firebase as singleton
-    // auth when needed
   }
 
   function shouldAuth () {

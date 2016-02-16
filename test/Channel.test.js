@@ -31,6 +31,16 @@ describe('Firebase::Channel', function(){
       expect(ref.update).to.have.been.calledWith('the-val');
     });
   });
+  describe('#push(value)', function() {
+    beforeEach(function(){
+      ref.push = sinon.stub();
+    });
+    it('pushs value into child ref', function(){
+      let channel = new Channel({ path, connection });
+      channel.push('the-val');
+      expect(ref.push).to.have.been.calledWith('the-val');
+    });
+  });
   describe('#onDisconnect(callback)', function(){
     let disconnectRef;
     beforeEach(function(){
