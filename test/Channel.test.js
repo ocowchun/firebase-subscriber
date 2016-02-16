@@ -21,26 +21,25 @@ describe('Firebase::Channel', function(){
     });
   });
 
-  describe('#update(value)', function() {
-    beforeEach(function(){
-      ref.update = sinon.stub();
-    });
-    it('updates value into child ref', function(){
-      let channel = new Channel({ ref });
-      channel.update('the-val');
-      expect(ref.update).to.have.been.calledWith('the-val');
-    });
+  describe('Setter Methods Delegation', function(){
+    function ensureDelegateToRef (methodName) {
+      describe(`#${methodName}(value)`, function() {
+        beforeEach(function(){
+          ref[methodName] = sinon.stub();
+        });
+        it(`delegate method \`${methodName}\` to ref`, function(){
+          let channel = new Channel({ ref });
+          channel[methodName]('the-val');
+          expect(ref[methodName]).to.have.been.calledWith('the-val');
+        });
+      });
+    }
+    ensureDelegateToRef('set');
+    ensureDelegateToRef('update');
+    ensureDelegateToRef('push');
+    ensureDelegateToRef('remove');
   });
-  describe('#push(value)', function() {
-    beforeEach(function(){
-      ref.push = sinon.stub();
-    });
-    it('pushs value into child ref', function(){
-      let channel = new Channel({ ref });
-      channel.push('the-val');
-      expect(ref.push).to.have.been.calledWith('the-val');
-    });
-  });
+
   describe('#onDisconnect(callback)', function(){
     let disconnectRef;
     beforeEach(function(){

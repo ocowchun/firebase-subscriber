@@ -1,9 +1,13 @@
 import _ from 'lodash';
 
+const SETTER_METHODS = [ 'update', 'push', 'set', 'remove' ];
+
 class Channel {
   constructor({ ref }) {
     this._ref = ref;
     this._events = [];
+
+    delegateMethods(SETTER_METHODS, this, ref);
   }
 
   on(eventName, cb, option = { ignoreFirst: false }) {
@@ -34,18 +38,18 @@ class Channel {
     });
   }
 
-  update(value) {
-    this._ref.update(value);
-  }
-
-  push(value) {
-    this._ref.push(value);
-  }
-
   onDisconnect(callback) {
     let disconnectRef = this._ref.onDisconnect();
     callback(disconnectRef);
   }
+}
+
+function delegateMethods (methods, obj, target) {
+  methods.forEach((method)=> {
+    obj[method] = function(...args) {
+      target[method](...args)
+    }
+  })
 }
 
 export default Channel;
