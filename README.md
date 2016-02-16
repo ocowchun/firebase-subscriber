@@ -39,16 +39,16 @@ channel.off(); //=> unsubscribe ALL event handlers bound on the channel
 
 A `Channel` instance is returned by `subscribe` function.
 
-- `channel.on(eventName, handler)`:
+#### `channel.on(eventName, handler)`:
 
 Wrap [Firebase.on()](https://www.firebase.com/docs/web/api/query/on.html),
 invoke handler with `snapshot.val()`
 
-- `channel.off()`:
+#### `channel.off()`:
 
 Unregister *ALL* event handlers on the channel
 
-- `channel.onDisconnect(callback)`:
+#### `channel.onDisconnect(callback)`:
 
 Invoke callback with disconnected ref, for example:
 
@@ -62,7 +62,7 @@ channel.onDisconnect(function(presenceRef) {
 
 `Connection` is a configurable factory returning singleton connection, which would auto re-auth when expired.
 
-```
+```javascript
 import { Connection } from 'firebase-subscriber';
 
 let getConnection = Connection(firebaseEndpoint, getAuthToken);
