@@ -58,6 +58,15 @@ channel.onDisconnect(function(presenceRef) {
 })
 ```
 
+#### Setter Methods
+
+`Channel` instances are equipped with some setter methods simply delegate to its underlying firebase `ref`:
+
+- `channel.set()`
+- `channel.push()`
+- `channel.remove()`
+- `channel.update()`
+
 ### Connection
 
 `Connection` is a configurable factory returning singleton connection, which would auto re-auth when expired.
