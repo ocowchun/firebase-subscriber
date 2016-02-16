@@ -13,7 +13,7 @@ var config = {
   output: {
     path: path.join(__dirname, 'dist'),
     filename: 'bundle.js',
-    library: 'sideBlock',
+    library: 'FirebaseSubscriber',
     libraryTarget: 'umd'
   },
   module: {
@@ -25,6 +25,10 @@ var config = {
         include: __dirname
       }
     ]
+  },
+  devServer: {
+    contentBase: './example',
+    hot: true
   }
 };
 
