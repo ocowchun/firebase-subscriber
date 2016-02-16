@@ -1,6 +1,6 @@
-import Firebase from 'src';
+import subscriberCreator from 'src/subscriber';
 
-describe('Firebase(endPoint, getAuthToken)', function(){
+describe('subscriberCreator(endPoint, getAuthToken)', function(){
   let endPoint = 'fb-end-point';
   let getAuthToken;
   beforeEach(function(){
@@ -12,19 +12,19 @@ describe('Firebase(endPoint, getAuthToken)', function(){
     getConnection = sinon.stub();
     Connection.returns(getConnection);
 
-    Firebase.__Rewire__('Connection', Connection);
+    subscriberCreator.__Rewire__('Connection', Connection);
   });
   afterEach(function(){
-    Firebase.__ResetDependency__('Connection');
+    subscriberCreator.__ResetDependency__('Connection');
   });
 
   it('returns a channel subscriber as a function', function(){
-    let subscriber = Firebase(endPoint, getAuthToken);
+    let subscriber = subscriberCreator(endPoint, getAuthToken);
 
     expect(subscriber).to.be.an.instanceof(Function);
   });
   it('inject endPoint and getAuthToken to generate connection getter', function(){
-    let subscriber = Firebase(endPoint, getAuthToken);
+    let subscriber = subscriberCreator(endPoint, getAuthToken);
     expect(Connection).to.have.been.calledWith(endPoint, getAuthToken);
   });
 
@@ -38,15 +38,15 @@ describe('Firebase(endPoint, getAuthToken)', function(){
       channel = {};
       Channel = sinon.stub();
       Channel.returns(channel);
-      Firebase.__Rewire__('Channel', Channel);
+      subscriberCreator.__Rewire__('Channel', Channel);
     });
     afterEach(function(){
-      Firebase.__ResetDependency__('Channel');
+      subscriberCreator.__ResetDependency__('Channel');
     });
     beforeEach(function(){
       conn = {};
       getConnection.returns(conn);
-      subscribe = Firebase(endPoint, getAuthToken);
+      subscribe = subscriberCreator(endPoint, getAuthToken);
     });
 
     it('creates a channel with connection', function(){

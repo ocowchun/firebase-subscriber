@@ -1,13 +1,7 @@
 import Connection from 'src/Connection';
 import Channel from 'src/Channel';
+import subscriber from 'src/subscriber';
 
-let Firebase = function(endPoint, getAuthToken) {
-  let getConnection = Connection(endPoint, getAuthToken);
-
-  return function subscribe(path) {
-    let connection = getConnection();
-    return new Channel({ connection, path });
-  }
-}
-
-export default Firebase;
+export { subscriber };
+export { Connection };
+export { Channel };

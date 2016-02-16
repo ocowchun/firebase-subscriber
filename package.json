@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "build": "webpack",
-    "test": "NODE_ENV=test NODE_PATH=. mocha -r test/support.js --compilers js:babel-register --recursive 'test/**/*.test.js' -w"
+    "test": "NODE_ENV=test NODE_PATH=. mocha -r test/support.js --compilers js:babel-register --recursive 'test/**/*.test.js' -w",
+    "start": "webpack-dev-server --history-api-fallback --hot --inline --progress --colors --quiet --port 3000"
   },
   "author": "",
   "license": "MIT",
@@ -24,6 +25,7 @@
     "rewire": "^2.5.1",
     "sinon": "^1.17.3",
     "sinon-chai": "^2.8.0",
-    "webpack": "^1.12.13"
+    "webpack": "^1.12.13",
+    "webpack-dev-server": "^1.14.1"
   }
 }
