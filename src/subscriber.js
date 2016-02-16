@@ -6,7 +6,8 @@ let subscriber = function(endPoint, getAuthToken) {
 
   return function subscribe(path) {
     let connection = getConnection();
-    return new Channel({ connection, path });
+    let ref = connection.child(path);
+    return new Channel({ ref });
   }
 }
 

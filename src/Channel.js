@@ -1,10 +1,8 @@
 import _ from 'lodash';
 
 class Channel {
-  constructor({ connection, path }) {
-    this._conn = connection;
-    this._path = path;
-    this._ref = connection.child(path);
+  constructor({ ref }) {
+    this._ref = ref;
     this._events = [];
   }
 

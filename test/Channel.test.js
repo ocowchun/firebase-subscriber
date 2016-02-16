@@ -12,12 +12,12 @@ describe('Firebase::Channel', function(){
   beforeEach(function(){
     ref = { on: sinon.stub() };
     connection.child.returns(ref);
-    channel = new Channel({ connection, path });
+    channel = new Channel({ ref });
   });
 
   describe('::new({ connection, path })', function(){
-    it('takes a channel path to init', function(){
-      let channel = new Channel({ path, connection });
+    it('takes a ref to init', function(){
+      let channel = new Channel({ ref });
     });
   });
 
@@ -26,7 +26,7 @@ describe('Firebase::Channel', function(){
       ref.update = sinon.stub();
     });
     it('updates value into child ref', function(){
-      let channel = new Channel({ path, connection });
+      let channel = new Channel({ ref });
       channel.update('the-val');
       expect(ref.update).to.have.been.calledWith('the-val');
     });
@@ -36,7 +36,7 @@ describe('Firebase::Channel', function(){
       ref.push = sinon.stub();
     });
     it('pushs value into child ref', function(){
-      let channel = new Channel({ path, connection });
+      let channel = new Channel({ ref });
       channel.push('the-val');
       expect(ref.push).to.have.been.calledWith('the-val');
     });
@@ -49,6 +49,7 @@ describe('Firebase::Channel', function(){
       ref.onDisconnect.returns(disconnectRef);
     });
     it('invokes callback with disconnect ref', function(){
+      let channel = new Channel({ ref });
       let disconnectCb = sinon.stub();
       channel.onDisconnect(disconnectCb);
 
@@ -63,13 +64,14 @@ describe('Firebase::Channel', function(){
           val() { return data }
         };
       }
-      it('registers event and callback to firebase child', function(){
+      beforeEach(function(){
+        channel = new Channel({ ref });
+      });
+      it('registers event and callback on ref', function(){
         let onChildAdded = sinon.spy();
 
         channel.on('child_added', onChildAdded);
 
-        expect(connection.child)
-          .to.have.been.calledWith(path);
         expect(ref.on).to.have.been.calledWith('child_added', sinon.match.func);
       });
       it('invokes callback with `val`ed first params', function(){
@@ -132,7 +134,7 @@ describe('Firebase::Channel', function(){
     });
 
     it('offs all the registered events', function(){
-      let channel = new Channel({ connection, path });
+      let channel = new Channel({ ref });
       let cb = sinon.spy();
       channel.on('event1', cb);
       channel.on('event2', cb);

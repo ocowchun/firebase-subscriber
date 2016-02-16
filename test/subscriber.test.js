@@ -23,13 +23,14 @@ describe('subscriberCreator(endPoint, getAuthToken)', function(){
 
     expect(subscriber).to.be.an.instanceof(Function);
   });
-  it('inject endPoint and getAuthToken to generate connection getter', function(){
+  it('inject endPoint and getAuthToken to generate chennel getter', function(){
     let subscriber = subscriberCreator(endPoint, getAuthToken);
     expect(Connection).to.have.been.calledWith(endPoint, getAuthToken);
   });
 
   describe('Subscriber(path)', function(){
     let subscribe, authTokenDeferred;
+    let ref;
     let authToken = 'auth-token',
         path = 'the-path';
 
@@ -44,7 +45,11 @@ describe('subscriberCreator(endPoint, getAuthToken)', function(){
       subscriberCreator.__ResetDependency__('Channel');
     });
     beforeEach(function(){
-      conn = {};
+      ref = {};
+      conn = {
+        child: sinon.stub()
+      };
+      conn.child.returns(ref);
       getConnection.returns(conn);
       subscribe = subscriberCreator(endPoint, getAuthToken);
     });
@@ -52,7 +57,8 @@ describe('subscriberCreator(endPoint, getAuthToken)', function(){
     it('creates a channel with connection', function(){
       let connection = conn;
       let ch = subscribe(path);
-      expect(Channel).to.have.been.calledWith({ path, connection })
+      expect(conn.child).to.have.been.calledWith(path);
+      expect(Channel).to.have.been.calledWith({ ref })
       expect(ch).to.equal(channel);
     });
   });
