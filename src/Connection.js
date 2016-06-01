@@ -1,52 +1,52 @@
-import FB from 'firebase';
-export const EXPIRING_BUFFER = 60 * 60;
+import FB from 'firebase'
+export const EXPIRING_BUFFER = 60 * 60
 let Connection = function(endPoint, getAuthToken) {
-  let conn;
-  let authed = false;
-  let authorizing = false;
-  let expiresAt = 0;
+  let conn
+  let authed = false
+  let authorizing = false
+  let expiresAt = 0
 
   return function getConnection() {
     if (!conn) {
-      conn = new FB(endPoint);
+      conn = new FB(endPoint)
     }
 
     if ( shouldAuth() ) {
-      authConnection();
+      authConnection()
     }
 
-    return conn;
+    return conn
   }
 
   function shouldAuth () {
     if (authorizing) {
-      return false;
+      return false
     }
-    return !authed || aboutToExpired();
+    return !authed || aboutToExpired()
   }
   function aboutToExpired () {
-    let now = parseInt(new Date().getTime() / 1000);
-    return expiresAt - now < EXPIRING_BUFFER;
+    let now = parseInt(new Date().getTime() / 1000)
+    return expiresAt - now < EXPIRING_BUFFER
   }
 
   function authConnection () {
-    authorizing = true;
+    authorizing = true
     getAuthToken().then((authToken)=> {
       conn.authWithCustomToken(authToken, (err, authData)=> {
-        authorizing = false;
+        authorizing = false
         if (err) {
-          console.error('[FIREBASE AUTH FAILED]', err);
-          return;
+          console.error('[FIREBASE AUTH FAILED]', err)
+          return
         }
-        expiresAt = authData.expires;
-        authed = true;
-      });
+        expiresAt = authData.expires
+        authed = true
+      })
     })
     .catch((err)=> {
-      authorizing = false;
-      console.error('[FIREBASE GET_AUTH FAILED]', err);
-    });
+      authorizing = false
+      console.error('[FIREBASE GET_AUTH FAILED]', err)
+    })
   }
-};
+}
 
-export default Connection;
+export default Connection

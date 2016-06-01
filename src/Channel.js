@@ -1,46 +1,46 @@
-import _ from 'lodash';
+import _ from 'lodash'
 
-const SETTER_METHODS = [ 'update', 'push', 'set', 'remove' ];
+const SETTER_METHODS = [ 'update', 'push', 'set', 'remove' ]
 
 class Channel {
   constructor({ ref }) {
-    this._ref = ref;
-    this._events = [];
+    this._ref = ref
+    this._events = []
 
-    delegateMethods(SETTER_METHODS, this, ref);
+    delegateMethods(SETTER_METHODS, this, ref)
   }
 
   on(eventName, cb, option = { ignoreFirst: false }) {
-    let { ignoreFirst } = option;
-    let handle = this._ref.on(eventName, this._valuedCb(cb, ignoreFirst));
-    this._events.push({ eventName, handle });
+    let { ignoreFirst } = option
+    let handle = this._ref.on(eventName, this._valuedCb(cb, ignoreFirst))
+    this._events.push({ eventName, handle })
   }
 
   _valuedCb(cb, ignoreFirst) {
-    let isFirstMessage = true;
+    let isFirstMessage = true
 
     return (snpashot, ...args)=> {
-      let val = snpashot.val();
+      let val = snpashot.val()
 
       if ( val ) {
         if ( ! (ignoreFirst && isFirstMessage) ) {
-          cb(val, ...args);
+          cb(val, ...args)
         }
       }
 
-      isFirstMessage = false;
+      isFirstMessage = false
     }
   }
 
   off() {
     _.each(this._events, ({ eventName, handle })=> {
-      this._ref.off(eventName, handle);
-    });
+      this._ref.off(eventName, handle)
+    })
   }
 
   onDisconnect(callback) {
-    let disconnectRef = this._ref.onDisconnect();
-    callback(disconnectRef);
+    let disconnectRef = this._ref.onDisconnect()
+    callback(disconnectRef)
   }
 }
 
@@ -52,4 +52,4 @@ function delegateMethods (methods, obj, target) {
   })
 }
 
-export default Channel;
+export default Channel

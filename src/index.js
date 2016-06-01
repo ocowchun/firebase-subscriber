@@ -1,7 +1,7 @@
-import Connection from 'src/Connection';
-import Channel from 'src/Channel';
-import subscriber from 'src/subscriber';
+import Connection from './Connection'
+import Channel from './Channel'
+import subscriber from './subscriber'
 
-export { subscriber };
-export { Connection };
-export { Channel };
+export { subscriber }
+export { Connection }
+export { Channel }
