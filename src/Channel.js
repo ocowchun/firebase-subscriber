@@ -10,9 +10,29 @@ class Channel {
     delegateMethods(SETTER_METHODS, this, ref)
   }
 
-  on(eventName, cb, option = { ignoreFirst: false }) {
-    let { ignoreFirst } = option
-    let handle = this._ref.on(eventName, this._valuedCb(cb, ignoreFirst))
+  on(eventName, cb, inputOptions) {
+    let defaultOptions = { ignoreFirst: false }
+    let options = Object.assign({}, defaultOptions, inputOptions)
+    let _ref = this._ref
+
+    /*
+     * TODO: enable this when needed
+    if(options !== defaultOptions) {
+      _ref = useOptionAsMethod(options, _ref)
+    }
+    function useOptionAsMethod(options, self) {
+      let _self = self
+      for(let key of Object.keys(options)) {
+        if(!self.hasOwnProperty(key) &&
+          typeof self[key] === 'function') {
+          _self = self[key](options[key])
+        }
+      }
+      return _self
+    }
+    */
+
+    let handle = _ref.on(eventName, this._valuedCb(cb, options.ignoreFirst))
     this._events.push({ eventName, handle })
   }
 

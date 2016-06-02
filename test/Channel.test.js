@@ -1,150 +1,166 @@
-import Channel from 'src/Channel';
+import Channel from 'src/Channel'
 
-describe('Firebase::Channel', function(){
-  let path = '/items';
-  let connection;
-  let channel, ref;
-  beforeEach(function(){
+describe('Firebase::Channel', function() {
+  let connection
+  let channel, ref
+  beforeEach(function() {
     connection = {
       child: sinon.stub()
-    };
-  });
-  beforeEach(function(){
-    ref = { on: sinon.stub() };
-    connection.child.returns(ref);
-    channel = new Channel({ ref });
-  });
+    }
+  })
+  beforeEach(function() {
+    ref = {
+      on: sinon.stub()
+    }
+    connection.child.returns(ref)
+    channel = new Channel({ ref })
+  })
 
-  describe('::new({ connection, path })', function(){
-    it('takes a ref to init', function(){
-      let channel = new Channel({ ref });
-    });
-  });
+  describe('::new({ connection, path })', function() {
+    it('takes a ref to init', function() {
+      new Channel({ ref })
+    })
+  })
 
-  describe('Setter Methods Delegation', function(){
+  describe('Setter Methods Delegation', function() {
     function ensureDelegateToRef (methodName) {
       describe(`#${methodName}(value)`, function() {
-        beforeEach(function(){
-          ref[methodName] = sinon.stub();
-        });
-        it(`delegate method \`${methodName}\` to ref`, function(){
-          let channel = new Channel({ ref });
-          channel[methodName]('the-val');
-          expect(ref[methodName]).to.have.been.calledWith('the-val');
-        });
-      });
+        beforeEach(function() {
+          ref[methodName] = sinon.stub()
+        })
+        it(`delegate method \`${methodName}\` to ref`, function() {
+          let channel = new Channel({ ref })
+          channel[methodName]('the-val')
+          expect(ref[methodName]).to.have.been.calledWith('the-val')
+        })
+      })
     }
-    ensureDelegateToRef('set');
-    ensureDelegateToRef('update');
-    ensureDelegateToRef('push');
-    ensureDelegateToRef('remove');
-  });
+    ensureDelegateToRef('set')
+    ensureDelegateToRef('update')
+    ensureDelegateToRef('push')
+    ensureDelegateToRef('remove')
+  })
 
-  describe('#onDisconnect(callback)', function(){
-    let disconnectRef;
-    beforeEach(function(){
-      disconnectRef = {};
-      ref.onDisconnect = sinon.stub();
-      ref.onDisconnect.returns(disconnectRef);
-    });
-    it('invokes callback with disconnect ref', function(){
-      let channel = new Channel({ ref });
-      let disconnectCb = sinon.stub();
-      channel.onDisconnect(disconnectCb);
+  describe('#onDisconnect(callback)', function() {
+    let disconnectRef
+    beforeEach(function() {
+      disconnectRef = {}
+      ref.onDisconnect = sinon.stub()
+      ref.onDisconnect.returns(disconnectRef)
+    })
+    it('invokes callback with disconnect ref', function() {
+      let channel = new Channel({ ref })
+      let disconnectCb = sinon.stub()
+      channel.onDisconnect(disconnectCb)
 
-      expect(disconnectCb).to.have.been.calledWith(disconnectRef);
-    });
-  });
+      expect(disconnectCb).to.have.been.calledWith(disconnectRef)
+    })
+  })
 
-  describe('Event Handling', function(){
-    describe('#on(eventName, callback, { ignoreFirst })', function(){
+  describe('Event Handling', function() {
+    describe('#on(eventName, callback, options)', function() {
       function getDataSnpashot (data) {
         return {
           val() { return data }
-        };
+        }
       }
-      beforeEach(function(){
-        channel = new Channel({ ref });
-      });
-      it('registers event and callback on ref', function(){
-        let onChildAdded = sinon.spy();
+      beforeEach(function() {
+        channel = new Channel({ ref })
+      })
+      it('registers event and callback on ref', function() {
+        let onChildAdded = sinon.spy()
 
-        channel.on('child_added', onChildAdded);
+        channel.on('child_added', onChildAdded)
 
-        expect(ref.on).to.have.been.calledWith('child_added', sinon.match.func);
-      });
-      it('invokes callback with `val`ed first params', function(){
-        let onChildAdded = sinon.spy();
-        let callback;
-        let data = { key: 'val' };
-        let dataSnapshot = getDataSnpashot(data);
+        expect(ref.on).to.have.been.calledWith('child_added', sinon.match.func)
+      })
+      it('invokes callback with `val`ed first params', function() {
+        let onChildAdded = sinon.spy()
+        let callback
+        let data = { key: 'val' }
+        let dataSnapshot = getDataSnpashot(data)
         ref.on = function(evName, cb) {
-          callback = cb;
-        };
+          callback = cb
+        }
 
-        channel.on('child_added', onChildAdded);
-        callback(dataSnapshot, 'arg1', 'arg2');
+        channel.on('child_added', onChildAdded)
+        callback(dataSnapshot, 'arg1', 'arg2')
 
-        expect(onChildAdded).to.have.been.calledWith(data, 'arg1', 'arg2');
-      });
-      it('not invokes callback is `val`ed result is null', function(){
-        let onChildAdded = sinon.spy();
-        let callback;
-        let dataSnapshot = getDataSnpashot(null);
+        expect(onChildAdded).to.have.been.calledWith(data, 'arg1', 'arg2')
+      })
+      it('not invokes callback is `val`ed result is null', function() {
+        let onChildAdded = sinon.spy()
+        let callback
+        let dataSnapshot = getDataSnpashot(null)
         ref.on = function(evName, cb) {
-          callback = cb;
-        };
+          callback = cb
+        }
 
-        channel.on('child_added', onChildAdded);
-        callback(dataSnapshot, 'arg1', 'arg2');
+        channel.on('child_added', onChildAdded)
+        callback(dataSnapshot, 'arg1', 'arg2')
 
-        expect(onChildAdded).not.to.have.been.called;
-      });
-      it('ignore the first one if `ignoreFirst` is passed', function(){
-        let onChildAdded = sinon.spy();
-        let callback;
-        let dataSnapshot1 = getDataSnpashot('val1');
-        let dataSnapshot2 = getDataSnpashot('val2');
+        expect(onChildAdded).not.to.have.been.called
+      })
+      it('ignore the first one if `ignoreFirst` is passed', function() {
+        let onChildAdded = sinon.spy()
+        let callback
+        let dataSnapshot1 = getDataSnpashot('val1')
+        let dataSnapshot2 = getDataSnpashot('val2')
         ref.on = function(evName, cb) {
-          callback = cb;
-        };
+          callback = cb
+        }
 
-        channel.on('child_added', onChildAdded, { ignoreFirst: true });
-        callback(dataSnapshot1, 'arg1', 'arg2');
-        callback(dataSnapshot2, 'arg3', 'arg4');
+        channel.on('child_added', onChildAdded, { ignoreFirst: true })
+        callback(dataSnapshot1, 'arg1', 'arg2')
+        callback(dataSnapshot2, 'arg3', 'arg4')
 
-        expect(onChildAdded).to.have.been.calledOnce;
-        expect(onChildAdded).to.have.been.calledWith('val2', 'arg3', 'arg4');
-      });
-    });
-  });
-  describe('#off()', function(){
+        expect(onChildAdded).to.have.been.calledOnce
+        expect(onChildAdded).to.have.been.calledWith('val2', 'arg3', 'arg4')
+      })
+      /*
+      it('calls `options` key as method, value as params', () => {
+        let onChildAdded = sinon.spy()
+        let options = {
+          limitToLast: 3,
+          orderByChild: 'created_at'
+        }
+        ref.limitToLast = sinon.stub()
+        ref.orderByChild = sinon.stub()
+        channel.on('child_added', onChildAdded, options)
+
+        expect(ref.limitToLast).to.have.been.calledWith(3)
+        expect(ref.orderByChild).to.have.been.calledWith('created_at')
+      })
+      */
+    })
+  })
+  describe('#off()', function() {
     function createHandle () {
       return function() {}
     }
     let handle1 = createHandle(),
-        handle2 = createHandle(),
-        handle3 = createHandle();
-    beforeEach(function(){
-      ref.on.onCall(0).returns(handle1);
-      ref.on.onCall(1).returns(handle2);
-      ref.on.onCall(2).returns(handle3);
-      ref.off = sinon.spy();
-    });
+      handle2 = createHandle(),
+      handle3 = createHandle()
+    beforeEach(function() {
+      ref.on.onCall(0).returns(handle1)
+      ref.on.onCall(1).returns(handle2)
+      ref.on.onCall(2).returns(handle3)
+      ref.off = sinon.spy()
+    })
 
-    it('offs all the registered events', function(){
-      let channel = new Channel({ ref });
-      let cb = sinon.spy();
-      channel.on('event1', cb);
-      channel.on('event2', cb);
-      channel.on('event3', cb);
+    it('offs all the registered events', function() {
+      let channel = new Channel({ ref })
+      let cb = sinon.spy()
+      channel.on('event1', cb)
+      channel.on('event2', cb)
+      channel.on('event3', cb)
 
-      channel.off();
+      channel.off()
 
-      expect(ref.off).to.have.been.calledWith('event1', handle1);
-      expect(ref.off).to.have.been.calledWith('event2', handle2);
-      expect(ref.off).to.have.been.calledWith('event3', handle3);
-    });
-  });
+      expect(ref.off).to.have.been.calledWith('event1', handle1)
+      expect(ref.off).to.have.been.calledWith('event2', handle2)
+      expect(ref.off).to.have.been.calledWith('event3', handle3)
+    })
+  })
 
-});
+})
