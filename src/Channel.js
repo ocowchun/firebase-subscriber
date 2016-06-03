@@ -11,26 +11,30 @@ class Channel {
   }
 
   on(eventName, cb, inputOptions) {
-    let defaultOptions = { ignoreFirst: false }
-    let options = Object.assign({}, defaultOptions, inputOptions)
+    let options = Object.assign({}, inputOptions)
     let _ref = this._ref
 
-    /*
-     * TODO: enable this when needed
-    if(options !== defaultOptions) {
+    if(options) {
       _ref = useOptionAsMethod(options, _ref)
     }
+
+    /*
+     * when options = {
+     *  limitToLast: 10,
+     *  orderByChild: 'created_at'
+     * }, it calls
+     * `ref.limitToLast(10).orderByChild('created_at')`
+     */
     function useOptionAsMethod(options, self) {
       let _self = self
       for(let key of Object.keys(options)) {
-        if(!self.hasOwnProperty(key) &&
-          typeof self[key] === 'function') {
-          _self = self[key](options[key])
+        if(typeof self[key] === 'function') {
+          console.log(`called ${key}::${options[key]}`)
+          _self = _self[key](options[key])
         }
       }
       return _self
     }
-    */
 
     let handle = _ref.on(eventName, this._valuedCb(cb, options.ignoreFirst))
     this._events.push({ eventName, handle })

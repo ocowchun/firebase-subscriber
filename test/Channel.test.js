@@ -59,7 +59,7 @@ describe('Firebase::Channel', function() {
 
   describe('Event Handling', function() {
     describe('#on(eventName, callback, options)', function() {
-      function getDataSnpashot (data) {
+      function getDataSnapshot (data) {
         return {
           val() { return data }
         }
@@ -78,7 +78,7 @@ describe('Firebase::Channel', function() {
         let onChildAdded = sinon.spy()
         let callback
         let data = { key: 'val' }
-        let dataSnapshot = getDataSnpashot(data)
+        let dataSnapshot = getDataSnapshot(data)
         ref.on = function(evName, cb) {
           callback = cb
         }
@@ -91,7 +91,7 @@ describe('Firebase::Channel', function() {
       it('not invokes callback is `val`ed result is null', function() {
         let onChildAdded = sinon.spy()
         let callback
-        let dataSnapshot = getDataSnpashot(null)
+        let dataSnapshot = getDataSnapshot(null)
         ref.on = function(evName, cb) {
           callback = cb
         }
@@ -104,8 +104,8 @@ describe('Firebase::Channel', function() {
       it('ignore the first one if `ignoreFirst` is passed', function() {
         let onChildAdded = sinon.spy()
         let callback
-        let dataSnapshot1 = getDataSnpashot('val1')
-        let dataSnapshot2 = getDataSnpashot('val2')
+        let dataSnapshot1 = getDataSnapshot('val1')
+        let dataSnapshot2 = getDataSnapshot('val2')
         ref.on = function(evName, cb) {
           callback = cb
         }
@@ -117,21 +117,29 @@ describe('Firebase::Channel', function() {
         expect(onChildAdded).to.have.been.calledOnce
         expect(onChildAdded).to.have.been.calledWith('val2', 'arg3', 'arg4')
       })
-      /*
       it('calls `options` key as method, value as params', () => {
         let onChildAdded = sinon.spy()
+        let callback
+        let dataSnapshot = getDataSnapshot('val1')
         let options = {
           limitToLast: 3,
           orderByChild: 'created_at'
         }
-        ref.limitToLast = sinon.stub()
-        ref.orderByChild = sinon.stub()
-        channel.on('child_added', onChildAdded, options)
+        ref.limitToLast = () => ref
+        ref.orderByChild = () => ref
+        ref.on = (evName, cb) => {
+          callback = cb
+        }
 
-        expect(ref.limitToLast).to.have.been.calledWith(3)
-        expect(ref.orderByChild).to.have.been.calledWith('created_at')
+        sinon.spy(ref, 'limitToLast')
+        sinon.spy(ref, 'orderByChild')
+
+        channel.on('child_added', onChildAdded, options)
+        callback(dataSnapshot, 'hi')
+
+        expect(ref.limitToLast).to.have.been.calledWith(options.limitToLast)
+        expect(ref.orderByChild).to.have.been.calledWith(options.orderByChild)
       })
-      */
     })
   })
   describe('#off()', function() {
