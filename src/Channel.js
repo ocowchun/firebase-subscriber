@@ -29,7 +29,6 @@ class Channel {
       let _self = self
       for(let key of Object.keys(options)) {
         if(typeof self[key] === 'function') {
-          console.log(`called ${key}::${options[key]}`)
           _self = _self[key](options[key])
         }
       }
