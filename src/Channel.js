@@ -10,7 +10,7 @@ class Channel {
     delegateMethods(SETTER_METHODS, this, ref)
   }
 
-  on(eventName, cb, inputOptions) {
+  once(eventName, cb, inputOptions) {
     let options = Object.assign({}, inputOptions)
     let _ref = this._ref
 
@@ -18,21 +18,15 @@ class Channel {
       _ref = useOptionAsMethod(options, _ref)
     }
 
-    /*
-     * when options = {
-     *  limitToLast: 10,
-     *  orderByChild: 'created_at'
-     * }, it calls
-     * `ref.limitToLast(10).orderByChild('created_at')`
-     */
-    function useOptionAsMethod(options, self) {
-      let _self = self
-      for(let key of Object.keys(options)) {
-        if(typeof self[key] === 'function') {
-          _self = _self[key](options[key])
-        }
-      }
-      return _self
+    _ref.once(eventName, this._valuedCb(cb, options.ignoreFirst))
+  }
+
+  on(eventName, cb, inputOptions) {
+    let options = Object.assign({}, inputOptions)
+    let _ref = this._ref
+
+    if(options) {
+      _ref = useOptionAsMethod(options, _ref)
     }
 
     let handle = _ref.on(eventName, this._valuedCb(cb, options.ignoreFirst))
@@ -45,10 +39,8 @@ class Channel {
     return (snpashot, ...args)=> {
       let val = snpashot.val()
 
-      if ( val ) {
-        if ( ! (ignoreFirst && isFirstMessage) ) {
-          cb(val, ...args)
-        }
+      if ( ! (ignoreFirst && isFirstMessage) ) {
+        cb(val, ...args)
       }
 
       isFirstMessage = false
@@ -73,6 +65,16 @@ function delegateMethods (methods, obj, target) {
       target[method](...args)
     }
   })
+}
+
+function useOptionAsMethod(options, self) {
+  let _self = self
+  for(let key of Object.keys(options)) {
+    if(typeof self[key] === 'function') {
+      _self = _self[key](options[key])
+    }
+  }
+  return _self
 }
 
 export default Channel
