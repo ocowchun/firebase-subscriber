@@ -10,9 +10,7 @@
   },
   "author": "",
   "license": "MIT",
-  "dependencies": {
-    "firebase": "^2.4.0"
-  },
+  "dependencies": {},
   "devDependencies": {
     "babel": "^6.5.2",
     "babel-loader": "^6.2.2",
@@ -21,11 +19,15 @@
     "babel-register": "^6.5.2",
     "bluebird": "^3.3.1",
     "chai": "^3.5.0",
+    "firebase": "^2.2.0",
     "mocha": "^2.4.5",
     "rewire": "^2.5.1",
     "sinon": "^1.17.3",
     "sinon-chai": "^2.8.0",
     "webpack": "^1.12.13",
     "webpack-dev-server": "^1.14.1"
+  },
+  "peerDependencies": {
+    "firebase": "^2.2.0"
   }
 }
