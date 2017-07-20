@@ -2,10 +2,11 @@ var path = require('path');
 var webpack = require('webpack');
 
 var config = {
-  devtool: 'cheap-module-eval-source-map',
+  devtool: false,
   entry: [
     './src/index'
   ],
+  externals: ['firebase'],
   resolve: {
     modules: [ 'node_modules', 'bower_components' ]
   },
@@ -25,10 +26,10 @@ var config = {
       }
     ]
   },
-  devServer: {
-    contentBase: './example',
-    hot: true
-  }
+  plugins: [
+    new webpack.optimize.UglifyJsPlugin()
+  ]
 };
 
 module.exports = config;
+
