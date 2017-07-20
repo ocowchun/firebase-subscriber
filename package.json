@@ -24,8 +24,8 @@
     "rewire": "^2.5.1",
     "sinon": "^1.17.3",
     "sinon-chai": "^2.8.0",
-    "webpack": "^1.12.13",
-    "webpack-dev-server": "^1.14.1"
+    "webpack": "^3.3.0",
+    "webpack-dev-server": "^2.5.1"
   },
   "peerDependencies": {
     "firebase": "^2.2.0"

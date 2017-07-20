@@ -8,8 +8,7 @@ var config = {
   ],
   externals: ['firebase'],
   resolve: {
-    root: [ __dirname ],
-    modulesDirectories: [ 'node_modules', 'bower_components' ]
+    modules: [ 'node_modules', 'bower_components' ]
   },
   output: {
     path: path.join(__dirname, 'dist'),
@@ -18,18 +17,14 @@ var config = {
     libraryTarget: 'umd'
   },
   module: {
-    loaders: [
+    rules: [
       {
         test: /\.js$/,
-        loader: 'babel',
+        loader: 'babel-loader',
         exclude: /node_modules/,
         include: __dirname
       }
     ]
-  },
-  devServer: {
-    contentBase: './example',
-    hot: true
   },
   plugins: [
     new webpack.optimize.UglifyJsPlugin()
