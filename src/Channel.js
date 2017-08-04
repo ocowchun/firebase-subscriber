@@ -1,4 +1,4 @@
-import _ from 'lodash'
+import _each from 'lodash/each'
 
 const SETTER_METHODS = [ 'update', 'push', 'set', 'remove' ]
 
@@ -48,7 +48,7 @@ class Channel {
   }
 
   off() {
-    _.each(this._events, ({ eventName, handle })=> {
+    _each(this._events, ({ eventName, handle })=> {
       this._ref.off(eventName, handle)
     })
   }
