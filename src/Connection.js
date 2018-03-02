@@ -32,15 +32,21 @@ let Connection = function(endPoint, getAuthToken) {
   function authConnection () {
     authorizing = true
     getAuthToken().then((authToken)=> {
-      conn.authWithCustomToken(authToken, (err, authData)=> {
-        authorizing = false
-        if (err) {
-          console.error('[FIREBASE AUTH FAILED]', err)
-          return
-        }
-        expiresAt = authData.expires
-        authed = true
-      })
+      if (!authToken) {
+        conn.authAnonymously((err, authData) => {
+          authorizing = false
+        })
+      } else {
+        conn.authWithCustomToken(authToken, (err, authData)=> {
+          authorizing = false
+          if (err) {
+            console.error('[FIREBASE AUTH FAILED]', err)
+            return
+          }
+          expiresAt = authData.expires
+          authed = true
+        })
+      }
     })
     .catch((err)=> {
       authorizing = false
