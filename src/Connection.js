@@ -10,11 +10,11 @@ let Connection = function(endPoint, getAuthToken) {
     if (!conn) {
       conn = new FB(endPoint)
     }
-
     if ( shouldAuth() ) {
       authConnection()
+    } else {
+      anonymousConnection()
     }
-
     return conn
   }
 
@@ -22,31 +22,35 @@ let Connection = function(endPoint, getAuthToken) {
     if (authorizing) {
       return false
     }
+    if (!getAuthToken) {
+      return false
+    }
     return !authed || aboutToExpired()
   }
+
   function aboutToExpired () {
     let now = parseInt(new Date().getTime() / 1000)
     return expiresAt - now < EXPIRING_BUFFER
   }
 
+  function anonymousConnection () {
+    conn.authAnonymously((err, authData) => {
+      authorizing = false
+    })
+  }
+
   function authConnection () {
     authorizing = true
     getAuthToken().then((authToken)=> {
-      if (!authToken) {
-        conn.authAnonymously((err, authData) => {
-          authorizing = false
-        })
-      } else {
-        conn.authWithCustomToken(authToken, (err, authData)=> {
-          authorizing = false
-          if (err) {
-            console.error('[FIREBASE AUTH FAILED]', err)
-            return
-          }
-          expiresAt = authData.expires
-          authed = true
-        })
-      }
+      conn.authWithCustomToken(authToken, (err, authData)=> {
+        authorizing = false
+        if (err) {
+          console.error('[FIREBASE AUTH FAILED]', err)
+          return
+        }
+        expiresAt = authData.expires
+        authed = true
+      })
     })
     .catch((err)=> {
       authorizing = false
