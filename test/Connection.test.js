@@ -1,7 +1,7 @@
 import Connection, { EXPIRING_BUFFER } from 'src/Connection'
 import Promise from 'bluebird'
 
-describe('Firebase::Connection(endPoint, getAuthToken)', () => {
+describe('Firebase::Connection(endPoint, options)', () => {
   let endPoint = 'the-fb-endpoint'
   let getAuthToken
   let mockGetTime
@@ -33,7 +33,6 @@ describe('Firebase::Connection(endPoint, getAuthToken)', () => {
       }
     })
   })
-
 
   describe('#getConnection', () => {
     let getConnection

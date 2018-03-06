@@ -2,9 +2,10 @@ import FB from 'firebase'
 export const EXPIRING_BUFFER = 60 * 60
 
 /*
- * @param {String} endPoint
- * @param {Function} [getAuthToken]
- * @param {Boolean} [isAnonymous]
+ * @param {string} endPoint - the firebase endpoint
+ * @param {object} options
+ * @param {function} [options.getAuthToken] - a promise resolving authToken
+ * @param {boolean} [options.isAnonymous] - a flag to determine if auth anonymously
  */
 const Connection = function (endPoint, { getAuthToken, isAnonymous }) {
   let conn
