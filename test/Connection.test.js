@@ -1,6 +1,5 @@
 import Connection, { EXPIRING_BUFFER } from 'src/Connection'
 import Promise from 'bluebird'
-import isFunction from 'lodash/isFunction'
 
 describe('Firebase::Connection(endPoint, getAuthToken)', () => {
   let endPoint = 'the-fb-endpoint'
@@ -16,6 +15,26 @@ describe('Firebase::Connection(endPoint, getAuthToken)', () => {
     Date.prototype.getTime = mockGetTime
   })
 
+  describe('Argument Error Behavior', () => {
+    it('should throw an TypeError when `isAnonymous = false` and `getAuthToken` is not a function', () => {
+      try {
+        Connection(endPoint, { isAnonymous: false })
+      } catch (err) {
+        expect(err.name).to.equal('TypeError')
+        expect(err.message).to.equal('getAuthToken should be a function for non-anonymous auth')
+      }
+    })
+    it('should throw an TypeError when `isAnonymous = true` and `getAuthToken` is a function', () => {
+      try {
+        Connection(endPoint, { isAnonymous: true, getAuthToken: () => {} })
+      } catch (err) {
+        expect(err.name).to.equal('TypeError')
+        expect(err.message).to.equal('getAuthToken should not be given for anonymous auth')
+      }
+    })
+  })
+
+
   describe('#getConnection', () => {
     let getConnection
     let FB, conn
@@ -23,7 +42,7 @@ describe('Firebase::Connection(endPoint, getAuthToken)', () => {
     let authToken = 'the-token'
 
     function fbAuthDone (err, data) {
-      if (!isFunction(onFbAuth)) {
+      if (typeof onFbAuth !== 'function') {
         throw new Error('onFbAuth is not a function')
       }
       onFbAuth(err, data)
@@ -53,7 +72,7 @@ describe('Firebase::Connection(endPoint, getAuthToken)', () => {
     describe('getConnection behaviors', () => {
       let connection
       beforeEach(() => {
-        getConnection = Connection(endPoint, getAuthToken)
+        getConnection = Connection(endPoint, { getAuthToken, isAnonymous: false})
         connection = getConnection()
       })
       it('returns `getConnection` as a function', () => {
@@ -72,7 +91,7 @@ describe('Firebase::Connection(endPoint, getAuthToken)', () => {
 
     describe('when call Connection with `getAuthToken`', () => {
       beforeEach(() => {
-        getConnection = Connection(endPoint, getAuthToken)
+        getConnection = Connection(endPoint, { getAuthToken, isAnonymous: false})
       })
       it('retrieve firebase authToken using `getAuthToken`', () => {
         getConnection()
@@ -116,7 +135,7 @@ describe('Firebase::Connection(endPoint, getAuthToken)', () => {
 
     describe('when call Connection without `getAuthToken`', () => {
       beforeEach(() => {
-        getConnection = Connection(endPoint)
+        getConnection = Connection(endPoint, { isAnonymous: true })
       })
       it('should call `authAnonymously`', () => {
         getConnection()

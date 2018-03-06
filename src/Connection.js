@@ -1,16 +1,24 @@
 import FB from 'firebase'
+import isFunction from 'lodash/isFunction'
 export const EXPIRING_BUFFER = 60 * 60
 
 /*
  * @param {String} endPoint
  * @param {Function} [getAuthToken]
+ * @param {Boolean} [isAnonymous]
  */
-const Connection = function(endPoint, getAuthToken) {
+const Connection = function(endPoint, { getAuthToken, isAnonymous }) {
   let conn
   let authed = false
   let authorizing = false
   let expiresAt = 0
-  const isAnonymous = !getAuthToken
+
+  if (!isAnonymous && typeof getAuthToken !== 'function') {
+    throw new TypeError('getAuthToken should be a function for non-anonymous auth')
+  }
+  if (isAnonymous && typeof getAuthToken === 'function') {
+    throw new TypeError('getAuthToken should not be given for anonymous auth')
+  }
 
   return function getConnection() {
     if (!conn) {
