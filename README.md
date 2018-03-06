@@ -10,16 +10,16 @@ The main purpose of FirebaseSubscriber is to:
 ## Usage:
 
 ```javascript
-var FirebaseSubscriber = require('firebase-subscriber');
+const FirebaseSubscriber = require('firebase-subscriber');
 
-var getAuthToken = function() {
+const getAuthToken = function() {
   // request application api here to get fresh firebase auth token
   // return a promise
   // this function would be invoked whenever the firebase auth token is expired
 }
 
-var subscribe = FirebaseSubscriber.subscriber(endPoint, getAuthToken);
-var channel = subscribe('/my-test-path');
+const subscribe = FirebaseSubscriber.subscriber(endPoint, { getAuthToken });
+const channel = subscribe('/my-test-path');
 
 channel.on('child_added', function(val) {
   // `val` here is the result of snapshot.val()
@@ -34,6 +34,12 @@ channel.off(); //=> unsubscribe ALL event handlers bound on the channel
 ```
 
 ## API:
+
+### `.subscriber()`
+
+The `.subscriber()` method takes two arguments, `endPoint` and `options` for `Connection`, and returns a function for subscribing certain path of a database.
+
+Please refer to the [Connection](#connection) section for the details of `options`.
 
 ### Channel
 
@@ -69,25 +75,38 @@ channel.onDisconnect(function(presenceRef) {
 
 ### Connection
 
-`Connection` is a configurable factory returning singleton connection, which would auto re-auth when expired.
+`Connection` is a configurable factory, which
+
+  - takes two arguments: `firebaseEndPoint` and `options`
+  - returns singleton connection, which would auto re-auth when expired
+
+#### `options`:
+
+| Option | Description |
+| --- | --- |
+| `getAuthToken` | A function which fetches firebase auth token from your application server and returns a promise |
+| `isAnonymous` | A flag to determine if auth anonymously, default: `false` |
+
+#### Usage
 
 ```javascript
 import { Connection } from 'firebase-subscriber';
 
-let getConnection = Connection(firebaseEndpoint, getAuthToken);
-let connection1 = getConnection();
-let connection2 = getConnection();
+const getConnection = Connection(firebaseEndpoint, { getAuthToken });
+const connection1 = getConnection();
+const connection2 = getConnection();
 
 expect(connection1).to.equal(connection2);
 ```
 
-where `getAuthToken` is a function which
+##### Auth Anonymously
 
-- fetches firebase auth token from your application server
-- returns a promise
-
-it would be invoked whever firebase auth token is expired.
-
+```javascript
+// specify `isAnonymous: true` in the options to create an anonymous connection
+// returns singleton connection with auto re-auth as well
+const getConnection = Connection(firebaseEndpoint, { isAnonymous: true });
+const connection = getConnection()
+```
 
 ## Testing
 
