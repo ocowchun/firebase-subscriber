@@ -10,7 +10,7 @@ let Connection = function(endPoint, getAuthToken) {
     if (!conn) {
       conn = new FB(endPoint)
     }
-    if ( shouldAuth() ) {
+    if (shouldAuth()) {
       authConnection()
     } else {
       anonymousConnection()
