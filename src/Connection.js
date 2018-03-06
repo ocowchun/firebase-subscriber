@@ -1,5 +1,4 @@
 import FB from 'firebase'
-import isFunction from 'lodash/isFunction'
 export const EXPIRING_BUFFER = 60 * 60
 
 /*
@@ -7,7 +6,7 @@ export const EXPIRING_BUFFER = 60 * 60
  * @param {Function} [getAuthToken]
  * @param {Boolean} [isAnonymous]
  */
-const Connection = function(endPoint, { getAuthToken, isAnonymous }) {
+const Connection = function (endPoint, { getAuthToken, isAnonymous }) {
   let conn
   let authed = false
   let authorizing = false
