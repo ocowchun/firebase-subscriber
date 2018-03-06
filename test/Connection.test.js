@@ -34,10 +34,11 @@ describe('Firebase::Connection(endPoint, getAuthToken)', () => {
     beforeEach(() => {
       onFbAuth = null
       conn = {
-        authWithCustomToken: function(token, cb) { onFbAuth = cb },
-        authAnonymously: sinon.stub()
+        authWithCustomToken: (token, cb) => { onFbAuth = cb },
+        authAnonymously: cb => { onFbAuth = cb }
       }
       sinon.spy(conn, 'authWithCustomToken')
+      sinon.spy(conn, 'authAnonymously')
       FB = sinon.stub()
       FB.returns(conn)
       Connection.__Rewire__('FB', FB)
@@ -120,6 +121,23 @@ describe('Firebase::Connection(endPoint, getAuthToken)', () => {
       it('should call `authAnonymously`', () => {
         getConnection()
         expect(conn.authAnonymously).to.have.been.called
+      })
+      it('should not doulbe-auth', () => {
+        getConnection()
+        fbAuthDone(null, { expires: nowInSec() + EXPIRING_BUFFER + 300 })
+        getConnection()
+        expect(conn.authAnonymously).to.have.been.calledOnce
+      })
+      it('should not auth when authorizing', () => {
+        getConnection()
+        getConnection()
+        expect(conn.authAnonymously).to.have.been.calledOnce
+      })
+      it('re-auth if connection is about to be expired', () => {
+        getConnection()
+        fbAuthDone(null, { expires: nowInSec() + EXPIRING_BUFFER - 300 })
+        getConnection()
+        expect(conn.authAnonymously).to.have.been.calledTwice
       })
     })
   })
