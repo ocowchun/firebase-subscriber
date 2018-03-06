@@ -1,6 +1,6 @@
 import subscriberCreator from 'src/subscriber';
 
-describe('subscriberCreator(endPoint, getAuthToken)', function(){
+describe('subscriberCreator(endPoint, options)', function(){
   let endPoint = 'fb-end-point';
   let getAuthToken;
   beforeEach(function(){
@@ -19,13 +19,14 @@ describe('subscriberCreator(endPoint, getAuthToken)', function(){
   });
 
   it('returns a channel subscriber as a function', function(){
-    let subscriber = subscriberCreator(endPoint, getAuthToken);
+    let subscriber = subscriberCreator(endPoint, { getAuthToken });
 
     expect(subscriber).to.be.an.instanceof(Function);
   });
-  it('inject endPoint and getAuthToken to generate chennel getter', function(){
-    let subscriber = subscriberCreator(endPoint, getAuthToken);
-    expect(Connection).to.have.been.calledWith(endPoint, getAuthToken);
+  it('inject `endPoint`, `getAuthToken` and `isAnonymous` to generate channel getter', function(){
+    const isAnonymous = false
+    let subscriber = subscriberCreator(endPoint, { getAuthToken, isAnonymous });
+    expect(Connection).to.have.been.calledWith(endPoint, { getAuthToken, isAnonymous });
   });
 
   describe('Subscriber(path)', function(){
@@ -51,7 +52,7 @@ describe('subscriberCreator(endPoint, getAuthToken)', function(){
       };
       conn.child.returns(ref);
       getConnection.returns(conn);
-      subscribe = subscriberCreator(endPoint, getAuthToken);
+      subscribe = subscriberCreator(endPoint, { getAuthToken });
     });
 
     it('creates a channel with connection', function(){
