@@ -1,5 +1,10 @@
 import FB from 'firebase'
 export const EXPIRING_BUFFER = 60 * 60
+
+/*
+ * @param {String} endPoint
+ * @param {Function} [getAuthToken]
+ */
 let Connection = function(endPoint, getAuthToken) {
   let conn
   let authed = false
