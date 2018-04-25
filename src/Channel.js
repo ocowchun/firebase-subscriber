@@ -1,5 +1,3 @@
-import _each from 'lodash/each'
-
 const SETTER_METHODS = [ 'update', 'push', 'set', 'remove' ]
 
 class Channel {
@@ -29,18 +27,24 @@ class Channel {
       _ref = useOptionAsMethod(options, _ref)
     }
 
-    let handle = _ref.on(eventName, this._valuedCb(cb, options.ignoreFirst))
+    let handle = _ref.on(eventName, this._valuedCb(cb, options))
     this._events.push({ eventName, handle })
   }
 
-  _valuedCb(cb, ignoreFirst) {
-    let isFirstMessage = true
+  remove() {
+    this._ref.remove()
+  }
 
-    return (snpashot, ...args)=> {
-      let val = snpashot.val()
+  _valuedCb(cb, options = {}) {
+    let isFirstMessage = true
+    let { ignoreFirst } = options
+
+    return (snapshot)=> {
+      let val = snapshot.val()
+      let key = snapshot.key()
 
       if ( ! (ignoreFirst && isFirstMessage) ) {
-        cb(val, ...args)
+        cb(val, key)
       }
 
       isFirstMessage = false
@@ -48,7 +52,7 @@ class Channel {
   }
 
   off() {
-    _each(this._events, ({ eventName, handle })=> {
+    this._events.forEach(({ eventName, handle })=> {
       this._ref.off(eventName, handle)
     })
   }
