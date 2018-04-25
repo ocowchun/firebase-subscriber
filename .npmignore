@@ -1,5 +1,7 @@
 node_modules
-*.swp
 bower_components
-dist
+*.swp
 *.log
+src
+test
+example
