@@ -6,7 +6,10 @@
   "scripts": {
     "build": "webpack --config webpack.config.prod.js",
     "test": "NODE_ENV=test NODE_PATH=. mocha -r test/support.js --compilers js:babel-register --recursive 'test/**/*.test.js' -w",
-    "start": "webpack-dev-server --history-api-fallback --hot --inline --progress --colors --quiet --port 3000"
+    "start": "webpack-dev-server --history-api-fallback --hot --inline --progress --colors --quiet --port 3000",
+    "release:patch": "yarn run build && release patch && yarn publish",
+    "release:minor": "yarn run build && release minor && yarn publish",
+    "release:major": "yarn run build && release major && yarn publish"
   },
   "author": "",
   "license": "MIT",
@@ -21,6 +24,7 @@
     "chai": "^3.5.0",
     "firebase": "^2.4.0",
     "mocha": "^2.4.5",
+    "release": "^4.0.0",
     "rewire": "^2.5.1",
     "sinon": "^1.17.3",
     "sinon-chai": "^2.8.0",
