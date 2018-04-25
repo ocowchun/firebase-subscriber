@@ -117,6 +117,23 @@ describe('Firebase::Channel', function() {
         expect(ref.limitToLast).to.have.been.calledWith(options.limitToLast)
         expect(ref.orderByChild).to.have.been.calledWith(options.orderByChild)
       })
+
+      it('ignore the first one if `ignoreFirst` is passed', function() {
+        let onValue = sinon.spy()
+        let callback
+        let dataSnapshot1 = getDataSnapshot('val1')
+        let dataSnapshot2 = getDataSnapshot('val2')
+        ref.once = function(evName, cb) {
+          callback = cb
+        }
+
+        channel.once('value', onValue, { ignoreFirst: true })
+        callback(dataSnapshot1)
+        callback(dataSnapshot2)
+
+        expect(onValue).to.have.been.calledOnce
+        expect(onValue).to.have.been.calledWith('val2')
+      })
     })
 
     describe('#on(eventName, callback, options)', function() {

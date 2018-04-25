@@ -16,7 +16,7 @@ class Channel {
       _ref = useOptionAsMethod(options, _ref)
     }
 
-    _ref.once(eventName, this._valuedCb(cb, options.ignoreFirst))
+    _ref.once(eventName, this._valuedCb(cb, options))
   }
 
   on(eventName, cb, inputOptions) {
