@@ -3,12 +3,12 @@ import Channel from 'src/Channel'
 describe('Firebase::Channel', function() {
   let connection
   let channel, ref
+
   beforeEach(function() {
     connection = {
       child: sinon.stub()
     }
-  })
-  beforeEach(function() {
+
     ref = {
       on: sinon.stub(),
       once: sinon.stub()
@@ -16,6 +16,13 @@ describe('Firebase::Channel', function() {
     connection.child.returns(ref)
     channel = new Channel({ ref })
   })
+
+  function getDataSnapshot (data, key) {
+    return {
+      val() { return data },
+      key() { return key }
+    }
+  }
 
   describe('::new({ connection, path })', function() {
     it('takes a ref to init', function() {
@@ -61,11 +68,6 @@ describe('Firebase::Channel', function() {
   describe('Event Handling', function() {
 
     describe('#once(eventName, callback, options)', function() {
-      function getDataSnapshot (data) {
-        return {
-          val() { return data }
-        }
-      }
       beforeEach(function() {
         channel = new Channel({ ref })
       })
@@ -76,19 +78,20 @@ describe('Firebase::Channel', function() {
 
         expect(ref.once).to.have.been.calledWith('value', sinon.match.func)
       })
-      it('invokes callback with `val`ed first params', function() {
+      it('invokes callback with `val` & `key`', function() {
         let onValue = sinon.spy()
         let callback
         let data = { key: 'val' }
-        let dataSnapshot = getDataSnapshot(data)
+        let key = 'the-key'
+        let dataSnapshot = getDataSnapshot(data, key)
         ref.once = function(evName, cb) {
           callback = cb
         }
 
         channel.once('value', onValue)
-        callback(dataSnapshot, 'arg1', 'arg2')
+        callback(dataSnapshot)
 
-        expect(onValue).to.have.been.calledWith(data, 'arg1', 'arg2')
+        expect(onValue).to.have.been.calledWith(data, key)
       })
       it('calls `options` key as method, value as params', () => {
         let onValue = sinon.spy()
@@ -108,7 +111,7 @@ describe('Firebase::Channel', function() {
         sinon.spy(ref, 'orderByChild')
 
         channel.once('value', onValue, options)
-        callback(dataSnapshot, 'hi')
+        callback(dataSnapshot)
 
         expect(ref.limitToLast).to.have.been.calledWith(options.limitToLast)
         expect(ref.orderByChild).to.have.been.calledWith(options.orderByChild)
@@ -116,11 +119,6 @@ describe('Firebase::Channel', function() {
     })
 
     describe('#on(eventName, callback, options)', function() {
-      function getDataSnapshot (data) {
-        return {
-          val() { return data }
-        }
-      }
       beforeEach(function() {
         channel = new Channel({ ref })
       })
@@ -135,15 +133,16 @@ describe('Firebase::Channel', function() {
         let onChildAdded = sinon.spy()
         let callback
         let data = { key: 'val' }
-        let dataSnapshot = getDataSnapshot(data)
+        let key = 'the-key'
+        let dataSnapshot = getDataSnapshot(data, key)
         ref.on = function(evName, cb) {
           callback = cb
         }
 
         channel.on('child_added', onChildAdded)
-        callback(dataSnapshot, 'arg1', 'arg2')
+        callback(dataSnapshot)
 
-        expect(onChildAdded).to.have.been.calledWith(data, 'arg1', 'arg2')
+        expect(onChildAdded).to.have.been.calledWith(data, key)
       })
       it('ignore the first one if `ignoreFirst` is passed', function() {
         let onChildAdded = sinon.spy()
@@ -155,11 +154,11 @@ describe('Firebase::Channel', function() {
         }
 
         channel.on('child_added', onChildAdded, { ignoreFirst: true })
-        callback(dataSnapshot1, 'arg1', 'arg2')
-        callback(dataSnapshot2, 'arg3', 'arg4')
+        callback(dataSnapshot1)
+        callback(dataSnapshot2)
 
         expect(onChildAdded).to.have.been.calledOnce
-        expect(onChildAdded).to.have.been.calledWith('val2', 'arg3', 'arg4')
+        expect(onChildAdded).to.have.been.calledWith('val2')
       })
       it('calls `options` key as method, value as params', () => {
         let onChildAdded = sinon.spy()
