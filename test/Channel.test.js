@@ -11,7 +11,8 @@ describe('Firebase::Channel', function() {
 
     ref = {
       on: sinon.stub(),
-      once: sinon.stub()
+      once: sinon.stub(),
+      remove: sinon.stub()
     }
     connection.child.returns(ref)
     channel = new Channel({ ref })
@@ -215,4 +216,11 @@ describe('Firebase::Channel', function() {
     })
   })
 
+  describe('#remove()', () => {
+    it('removes the current ref', () => {
+      let channel = new Channel({ ref })
+      channel.remove()
+      expect(ref.remove).to.have.been.called
+    })
+  })
 })
