@@ -31,8 +31,8 @@ class Channel {
     this._events.push({ eventName, handle })
   }
 
-  remove(path) {
-
+  remove() {
+    this._ref.remove()
   }
 
   _valuedCb(cb, options = {}) {
