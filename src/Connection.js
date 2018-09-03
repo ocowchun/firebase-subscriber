@@ -1,4 +1,4 @@
-import FB from 'firebase'
+import firebase from 'firebase'
 export const EXPIRING_BUFFER = 60 * 60
 
 /*
@@ -7,8 +7,8 @@ export const EXPIRING_BUFFER = 60 * 60
  * @param {function} [options.getAuthToken] - a promise resolving authToken
  * @param {boolean} [options.isAnonymous] - a flag to determine if auth anonymously
  */
-const Connection = function (endPoint, { getAuthToken, isAnonymous }) {
-  let conn
+const Connection = function ({ apiKey, databaseURL, authDomain, getAuthToken, isAnonymous }) {
+  let fbApp
   let authed = false
   let authorizing = false
   let expiresAt = 0
@@ -21,18 +21,24 @@ const Connection = function (endPoint, { getAuthToken, isAnonymous }) {
   }
 
   return function getConnection() {
-    if (!conn) {
-      conn = new FB(endPoint)
+    if (!fbApp) {
+      var config = {
+        apiKey,
+        authDomain,
+        databaseURL
+      };
+
+      fbApp = firebase.initializeApp(config);
     }
     if (!shouldAuth()) {
-      return conn
+      return fbApp
     }
     if (isAnonymous) {
       authAnonymousConnection()
     } else {
       authConnection()
     }
-    return conn
+    return fbApp
   }
 
   function shouldAuth () {
@@ -47,25 +53,26 @@ const Connection = function (endPoint, { getAuthToken, isAnonymous }) {
     return expiresAt - now < EXPIRING_BUFFER
   }
 
-  function authResultHandler (err, authData) {
+  function authResultHandler (err) {
     authorizing = false
     if (err) {
       console.error('[FIREBASE AUTH FAILED]', err)
       return
     }
-    expiresAt = authData.expires
+    expiresAt = (new Date().getTime()/1000) + 3600
     authed = true
   }
 
   function authAnonymousConnection () {
     authorizing = true
-    conn.authAnonymously(authResultHandler)
   }
 
   function authConnection () {
     authorizing = true
     getAuthToken().then(authToken => {
-      conn.authWithCustomToken(authToken, authResultHandler)
+      return firebase.auth(fbApp).signInWithCustomToken(authToken)
+    }).then(userCred =>{
+      authResultHandler(null)
     })
     .catch(err => {
       authorizing = false

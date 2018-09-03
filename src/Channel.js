@@ -1,11 +1,7 @@
-const SETTER_METHODS = [ 'update', 'push', 'set', 'remove' ]
-
 class Channel {
   constructor({ ref }) {
     this._ref = ref
     this._events = []
-
-    delegateMethods(SETTER_METHODS, this, ref)
   }
 
   once(eventName, cb, inputOptions) {
@@ -41,7 +37,7 @@ class Channel {
 
     return (snapshot)=> {
       let val = snapshot.val()
-      let key = snapshot.key()
+      let key = snapshot.key
 
       if ( ! (ignoreFirst && isFirstMessage) ) {
         cb(val, key)
